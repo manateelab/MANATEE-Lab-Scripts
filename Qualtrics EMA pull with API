@@ -1,0 +1,48 @@
+#Install the specific package
+
+install.packages("qualtRics")
+
+require(qualtRics)
+
+##Throw in your api token and 'datacenter' (the data center is the text that preceeds ".qualtrics" in the URL so umiami in our case)
+
+registerOptions(api_token=" ", root_url="https://umiami.qualtrics.com", useLocalTime = TRUE)
+
+#This will retrieve ALL SURVEYS under your user name, but you could call specific ones if you wanted
+surveys <- getSurveys()
+
+##remove any surveys not of interest (non EMA surveys in this case)
+EMAsurveys <- surveys[c(5:49,51:87,89:96),] 
+
+##Edit name variable to just the four numerical digits
+EMAsurveys$name <- as.character(EMAsurveys$name)
+EMAsurveys$name <- substr(EMAsurveys$name,9,12)
+
+## for each survey, 1-90, pull all the data and write it out to a csv file 
+
+for (i in 1:90) {
+  EMAdata <- getSurvey(EMAsurveys$id[i], force_request = TRUE)
+  
+  #dummy code variables if needed for later import
+  EMAdata$Q2_1 <- ifelse(EMAdata$Q2_1!="Acquaintance(s)",0,1)
+  EMAdata$Q2_2 <- ifelse(EMAdata$Q2_2!="Strangers",0,1)
+  EMAdata$Q2_3 <- ifelse(EMAdata$Q2_3!="Alone",0,1)
+  EMAdata$Q2_4 <- ifelse(EMAdata$Q2_4!="Close friend(s)",0,1)
+  EMAdata$Q2_5 <- ifelse(EMAdata$Q2_5!="Romantic partner",0,1)
+  EMAdata$Q2_6 <- ifelse(EMAdata$Q2_6!="Family",0,1)
+  EMAdata$Q2_7 <- ifelse(EMAdata$Q2_7!="Coworkers",0,1)
+  
+  EMAdata$Q21_TEXT <- ifelse(EMAdata$Q21_TEXT=="","NA",EMAdata$Q21_TEXT)
+  
+  EMAdata$Q3_1 <- ifelse(EMAdata$Q3_1=="Yes, face-to-face conversation",1,0)
+  EMAdata$Q3_2 <- ifelse(EMAdata$Q3_2=="Yes, real-time digital converstaion (phone, text, social media)",1,0)
+  EMAdata$Q3_3 <- ifelse(EMAdata$Q3_1=="No",1,0)
+  
+  EMAdata <- EMAdata[,-c(6:9)]
+
+  #filename is simply their sub ID '####.csv'
+  filename <-  paste("//datastore01.psy.miami.edu......./EMA data/", EMAsurveys$name[i], ".csv", sep="")
+  write.csv(EMAdata, file = filename)
+}
+
+
