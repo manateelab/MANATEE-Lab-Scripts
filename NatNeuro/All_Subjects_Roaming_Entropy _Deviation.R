@@ -1,6 +1,4 @@
-# This script is identical to Calculate_PredictionErrors but I changed the names of variables and some of the formatting so that it could be used on the Moves long form data.
 library(tidyverse)
-setwd("/Users/nataliesaragosaharris/Desktop")
 
 #Get long form file with all data organized by date.#
 longdata <- read.csv("Moves_Long_Form.csv")
