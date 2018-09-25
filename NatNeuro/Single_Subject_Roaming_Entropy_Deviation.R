@@ -1,4 +1,4 @@
-library(tidyverse))
+library(tidyverse)
 
 #Get file with all roaming entropy data organized by date.#
 longdata <- read.csv("MS1003_storyline_re_matrix.csv")
@@ -78,6 +78,5 @@ row_counter = 1; #R indexes at 1. Keeps track of current row.
   }
   
 
-setwd("C:/Users/treneau/Documents/Potential Figures")
 write.csv(PE_dataframe,file = "MS1003_PE.csv", row.names = FALSE)
 
